@@ -8,6 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using PBI.CaseStudy.Models.Interfaces;
+using PBI.CaseStudy.Models;
+using PBI.CaseStudy.Helper;
+
 
 namespace PBI.CaseStudy
 {
@@ -24,6 +28,8 @@ namespace PBI.CaseStudy
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+
+            services.AddScoped<IHistoricalData<SecurityHistoricData>, SecurityHistoricalData>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
