@@ -47,7 +47,7 @@ namespace PBI.CaseStudy.Helper
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Problem with convertig csv line '{historicDataLine}' into HistoricDataModel");
+                _logger.LogError(ex, $"Couldnt convert '{historicDataLine}' properly into SecurityHistoricData");
                 return null;
             }
         }
@@ -86,7 +86,6 @@ namespace PBI.CaseStudy.Helper
 
                     }
                 }
-
                 currentData.Spike = currentData.High - currentData.Low;
             }
         }

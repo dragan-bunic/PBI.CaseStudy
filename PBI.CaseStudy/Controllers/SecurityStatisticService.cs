@@ -20,13 +20,10 @@ namespace PBI.CaseStudy.Controllers
 
             var model = new SecurityStatistic();
 
-            //var maxClose = historicalData.Max(data => data.Close);
             model.MaxClose = new Statistic { Value = historicalData.Max(data => data.Close), Date = historicalData.OrderByDescending(data => data.Close).FirstOrDefault().Date };
 
-            //var minClose = historicalData.Min(data => data.Close);
             model.MinClose = new Statistic { Value = historicalData.Min(data => data.Close), Date = historicalData.OrderBy(data => data.Close).FirstOrDefault().Date };
 
-            //  var maxChangePercent = historicalData.Max(data => data.ChangePercent).Value;
             var maxSpike = historicalData.FindAll(data => data.PercentChange > 0)?.Max(data => data.Spike);
             model.MaxSpike = maxSpike.HasValue ? new Statistic { Value = maxSpike.Value, Date = historicalData.Find(data => data.Spike == maxSpike.Value).Date } : null;
 
@@ -35,6 +32,7 @@ namespace PBI.CaseStudy.Controllers
            if (securitySettings != null && maxSpike.HasValue)
             {
                 int numberOfShares = securitySettings.NumberOfshares;
+
                 double currentInvestmentSpike = historicalData.Find(data => data.Date == model.MaxSpike.Date).Close * numberOfShares;
                 double currentInvestmentMax = historicalData.Find(data => data.Date == model.MaxClose.Date).Close * numberOfShares;
                 double currentInvestmentMin = historicalData.Find(data => data.Date == model.MinClose.Date).Close * numberOfShares;

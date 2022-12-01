@@ -51,8 +51,7 @@ namespace PBI.CaseStudy.Controllers
             {
                 var historicalData = _securityHistoricData.GetHistoricalData(security.File);
                 var statisticsData = _securityStatisticsDataService.GetStatisticsData(security.Id, historicalData);
-                //var chartData = _chartDataService.GetChartData(historicalData);
-                listOfSecurities.Add(new SecurityView(security.Id, security.Security, historicalData, statisticsData/*, chartData*/));
+                listOfSecurities.Add(new SecurityView(security.Id, security.Security, historicalData, statisticsData));
             }
 
             return listOfSecurities;

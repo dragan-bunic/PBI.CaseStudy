@@ -1,21 +1,22 @@
 ﻿@model PBI.CaseStudy.Models.SecurityView
 @using System.Globalization
+<div class="row d-flex justify-content-center">
+    <span>
+        <strong>Max </strong> Return On Investment(ROI) would be on date @Model.SecurityStatistic.MaxClose.Date.ToString("MM/dd/yyyy"), for @Model.SecurityStatistic.ROIMaxClose.NumberOfShares.ToString("N0", new CultureInfo("en-US")) shares invested on @Model.SecurityStatistic.ROIMaxClose.InvestedDate.ToString("MM/dd/yyyy") it amounts to <strong> @string.Format("{0}%", Model.SecurityStatistic.ROIMaxClose.Value.ToString("N2"))</strong>
+    </span>
+</div>
+<div class="row d-flex justify-content-center">
+    <span>
+        <strong>Min </strong> Return On Investment(ROI) would be on date @Model.SecurityStatistic.MinClose.Date.ToString("MM/dd/yyyy"), for @Model.SecurityStatistic.ROIMinClose.NumberOfShares.ToString("N0", new CultureInfo("en-US")) shares invested on @Model.SecurityStatistic.ROIMinClose.InvestedDate.ToString("MM/dd/yyyy") it amounts to <strong>@string.Format("{0}%", Model.SecurityStatistic.ROIMinClose.Value.ToString("N2"))</strong>
+    </span>
+</div>
+<div class="row d-flex justify-content-center">
+    <span>
+        <strong>Spike </strong> Return On Investment(ROI) would be on date @Model.SecurityStatistic.MaxSpike.Date.ToString("MM/dd/yyyy"), for @Model.SecurityStatistic.ROISpikeClose.NumberOfShares.ToString("N0", new CultureInfo("en-US")) shares invested on @Model.SecurityStatistic.ROISpikeClose.InvestedDate.ToString("MM/dd/yyyy") it amounts to <strong> @string.Format("{0}%", Model.SecurityStatistic.ROISpikeClose.Value.ToString("N2"))</strong>
+    </span>
+</div>
 
-@*<h2>@string.Format("{0}({1})", Model.SecurityName, Model.Id)</h2>*@
 
-<script>
-    var highAverage = 77,
-        lowAverage = 58;
-
-    function customizePoint() {
-        debugger;
-        if (this.value > highAverage) {
-            return { color: "#ff7c7c", hoverStyle: { color: "#ff7c7c" } };
-        } else if (this.value < lowAverage) {
-            return { color: "#8c8cff", hoverStyle: { color: "#8c8cff" } };
-        }
-    }
-</script>
 
 @(Html.DevExtreme().Chart()
         .ID($"chart_{Model.Id}")
@@ -66,7 +67,7 @@
                 .TickInterval(1)
                 .Title(t => t.Text("US dollars"))
                 .Label(l => l.Format(f => f
-                .Type(Format.Currency).Precision(0)));
+                .Type(Format.Currency).Precision(0.00)));
         })
         .ArgumentAxis(a => a
             .WorkdaysOnly(true)
@@ -94,7 +95,7 @@
                     '<tr style="border-bottom: 1px solid black"><td colspan="100%"></td></tr>'+
                     '<tr style="border-bottom: 1px solid white"><td colspan="100%"></td></tr>'+
                     '<tr style="border-bottom: 1px solid white"><td colspan="100%"></td></tr>'+
-                    '<tr><td>Volume:</td><td align="right">' + arg.point.data.Volume.toLocaleString() + '</td></tr>');
+                    '<tr><td>Volume:</td><td align="right">' + arg.point.data.Volume.toLocaleString() + '</td></tr></table>');
                     return {
                         html: content.join('')
                     };
@@ -111,7 +112,6 @@
             )
             .CustomizeTooltip(@<text>
                 function (e) {
-                    console.log(e);
                     return {
                         html: e.description
                     };
@@ -125,7 +125,7 @@
             .Font(f => { f.Color("#25BF96"); })
             .Argument(Model.SecurityStatistic.MaxClose.Date)
             .Type(AnnotationType.Text)
-            .Description($"The highest price was {Model.SecurityStatistic.MaxClose.Value.ToString("N2")}$ on a day {Model.SecurityStatistic.MaxClose.Date.ToString("MM/dd/yyyy")}")
+            .Description($"Maximum closing price for this scurity is {Model.SecurityStatistic.MaxClose.Value.ToString("N2")}$ on a day {Model.SecurityStatistic.MaxClose.Date.ToString("MM/dd/yyyy")}")
             .Text("Max");
 
             a.Add()
@@ -133,7 +133,7 @@
             .Font(f => { f.Color("#CB1919"); })
             .Argument(Model.SecurityStatistic.MinClose.Date)
             .Type(AnnotationType.Text)
-            .Description($"The lowest price was  {Model.SecurityStatistic.MinClose.Value.ToString("N2")}$ on a day {Model.SecurityStatistic.MinClose.Date.ToString("MM/dd/yyyy")}")
+            .Description($"Minimum closing price for this scurity is  {Model.SecurityStatistic.MinClose.Value.ToString("N2")}$ on a day {Model.SecurityStatistic.MinClose.Date.ToString("MM/dd/yyyy")}")
             .Text("Min");
             if (Model.SecurityStatistic.MaxSpike != null)
             {
@@ -142,7 +142,7 @@
                 .Font(f => { f.Color("#A71E90"); })
                 .Argument(Model.SecurityStatistic.MaxSpike.Date)
                 .Type(AnnotationType.Text)
-                .Description($"The most positive change was {@Model.SecurityStatistic.MaxSpike.Value.ToString("N2")} on a day {Model.SecurityStatistic.MaxSpike.Date.ToString("MM/dd/yyyy")}")
+                .Description($"Most significant positive spike in the price was {@Model.SecurityStatistic.MaxSpike.Value.ToString("N2")} on a day {Model.SecurityStatistic.MaxSpike.Date.ToString("MM/dd/yyyy")}")
                 .Text("Spike");
             }
         })
@@ -150,34 +150,19 @@
         .DataSource(Model.HistoricData)
     )
 
-<div class="container">
+<div class="container  mt-2">
     <div class="row">
-        <div class="col">
-            <span class="label">Lowest price:</span>
-            <span class="price low">@string.Format("{0}$", @Model.SecurityStatistic.MinClose.Value.ToString("N2"))</span>
-            <span class="date">@Model.SecurityStatistic.MinClose.Date.ToString("MM/dd/yyyy")</span>
+        <div class="col border-right">
+            <span style="color: #25BF96; text-align: center; font-size: 130%; display: block;">@string.Format("{0}$", Model.SecurityStatistic.MaxClose.Value.ToString("N2"))</span>
+            <div class="d-flex justify-content-between"><span style=" font: bold; color: #25BF96;">MAX</span><span style=" text-align: right; font-size: 100%; color: gray;">@Model.SecurityStatistic.MaxClose.Date.ToString("MM/dd/yyyy")</span></div>
+        </div>
+        <div class="col border-right">
+            <span style="color: #A71E90; text-align: center; font-size: 130%; display: block;">@string.Format("{0}", Model.SecurityStatistic.MaxSpike.Value.ToString("N2"))</span>
+            <div class="d-flex justify-content-between"><span style=" font: bold; color: #A71E90;">SPIKE</span><span style=" text-align: right; font-size: 100%; color: gray;">@Model.SecurityStatistic.MaxSpike.Date.ToString("MM/dd/yyyy")</span></div>
         </div>
         <div class="col">
-            <span class="label">Highest price:</span>
-            <span class="price high">@string.Format("{0}$", Model.SecurityStatistic.MaxClose.Value.ToString("N2"))</span>
-            <span class="date">@Model.SecurityStatistic.MaxClose.Date.ToString("MM/dd/yyyy")</span>
+            <span style="color: #CB1919; text-align: center; font-size: 130%; display: block;">@string.Format("{0}$", Model.SecurityStatistic.MinClose.Value.ToString("N2"))</span>
+            <div class="d-flex justify-content-between"><span style=" font: bold; color: #CB1919;">MIN</span><span style=" text-align: right; font-size: 100%; color: gray;">@Model.SecurityStatistic.MinClose.Date.ToString("MM/dd/yyyy")</span></div>
         </div>
-        @if (Model.SecurityStatistic.MaxSpike != null)
-        {
-            <div class="col">
-                <span class="label">Most positive change:</span>
-                <span class="price spike">@string.Format("{0}", Model.SecurityStatistic.MaxSpike.Value.ToString("N2"))</span>
-                <span class="date">@Model.SecurityStatistic.MaxSpike.Date.ToString("MM/dd/yyyy")</span>
-            </div>
-        }
-    </div>
-    <div>
-        <strong>Max</strong> Return On Investment(ROI) would be on date (@Model.SecurityStatistic.MaxClose.Date.ToString("MM/dd/yyyy")) for @Model.SecurityStatistic.ROIMaxClose.NumberOfShares.ToString("N0", new CultureInfo("en-US")) shares invested on @Model.SecurityStatistic.ROIMaxClose.InvestedDate.ToString("MM/dd/yyyy") amounts to <strong>@string.Format("{0}%", Model.SecurityStatistic.ROIMaxClose.Value.ToString("N2"))</strong>
-    </div>
-    <div>
-        <strong>Min</strong> Return On Investment(ROI) would be on date (@Model.SecurityStatistic.MinClose.Date.ToString("MM/dd/yyyy")) for @Model.SecurityStatistic.ROIMinClose.NumberOfShares.ToString("N0", new CultureInfo("en-US")) shares invested on @Model.SecurityStatistic.ROIMinClose.InvestedDate.ToString("MM/dd/yyyy") amounts to <strong>@string.Format("{0}%", Model.SecurityStatistic.ROIMinClose.Value.ToString("N2"))</strong>
-    </div>
-    <div>
-        <strong>Spike</strong> Return On Investment(ROI) would be on date (@Model.SecurityStatistic.MaxSpike.Date.ToString("MM/dd/yyyy")) for @Model.SecurityStatistic.ROISpikeClose.NumberOfShares.ToString("N0", new CultureInfo("en-US")) shares invested on @Model.SecurityStatistic.ROISpikeClose.InvestedDate.ToString("MM/dd/yyyy") amounts to <strong>@string.Format("{0}%", Model.SecurityStatistic.ROISpikeClose.Value.ToString("N2"))</strong>
     </div>
 </div>

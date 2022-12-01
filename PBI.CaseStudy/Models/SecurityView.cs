@@ -11,18 +11,16 @@ namespace PBI.CaseStudy.Models
         public string SecurityName { get; private set; }
         public List<SecurityHistoricData> HistoricData { get; private set; }
         public SecurityStatistic SecurityStatistic { get; private set; }
-        //public List<object> HistoricalChartData { get; private set; }
         public SecurityView(string id,
                              string securityName,
                              List<SecurityHistoricData> historicData,
-                             SecurityStatistic securityStatistic//,
-                             /*List<object> historicalChartData*/)
+                             SecurityStatistic securityStatistic)
         {
             Id = id;
             SecurityName = securityName;
             HistoricData = historicData;
             SecurityStatistic = securityStatistic;
-            //HistoricalChartData = historicalChartData;
+
 
         }
     }
