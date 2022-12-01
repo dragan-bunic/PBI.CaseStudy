@@ -1,8 +1,29 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model List<PBI.CaseStudy.Models.SecurityView>
+@{
+    ViewData["Title"] = "Case Study";
 }
+@(Html.DevExtreme().TabPanel()
+    .ID("tabPanel")
+    .SelectedIndex(0)
+    .Loop(false)
+    .AnimationEnabled(true)
+    .SwipeEnabled(true)
+    .Items(i =>
+    {
+        foreach(var security in Model)
+        {
+            i.Add()
+            .Title(security.Id)
+            .Template(@<text>
+                <div style="tabpanel-item">
+                    @await Html.PartialAsync("_SecurityDetails", security)
+                </div>
+            </text>);
+        }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    })
+)
+
+<div>
+
 </div>

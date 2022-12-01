@@ -1,0 +1,18 @@
+[
+  {
+    "id": "GLW",
+    "security": "Corning, Inc.",
+    "file": "GLW.csv",
+    "investedDate": "1/1/2015",
+    "numberOfshares": "1000"
+  },
+  {
+    "id": "NVDA",
+    "security": "Nvidia Corporation, In.",
+    "file": "NVDA.csv",
+    "investedDate": "1/1/2015",
+    "numberOfshares": "1000"
+  }
+]
+
+

@@ -16,28 +16,26 @@ namespace PBI.CaseStudy.Helper
         : base(webHostEnvironment, logger)
         {
         }
-
         public override List<SecurityHistoricData> GetHistoricalData(string csvName)
         {
 
             LoadHistoricalData(csvName);
+            SetSpikeChangeAndChangePercent();
             return _historicalData;
         }
-
         protected override SecurityHistoricData GetCSV(string historicDataLine)
         {
-            if (string.IsNullOrEmpty(historicDataLine) || !historicDataLine.Contains(Settings.Separator))
+            if (string.IsNullOrEmpty(historicDataLine) || !historicDataLine.Contains(Resources.Separator))
             {
                 return null;
             }
-
             try
             {
-                var dataValues = GetFormattedHistoricalDataLine(historicDataLine).Split(Settings.Separator);
+                var dataValues = GetFormattedHistoricalDataLine(historicDataLine).Split(Resources.Separator);
 
                 var model = new SecurityHistoricData
                 {
-                    Date = DateTime.Parse(dataValues[(int)PBI.CaseStudy.Helper.HistoricalData.Date], new CultureInfo("en-US")),
+                    Date = DateTime.Parse(dataValues[(int)HistoricalData.Date], new CultureInfo("en-US")),
                     Open = GetHistoricValue(dataValues, HistoricalData.Open),
                     High = GetHistoricValue(dataValues, HistoricalData.High),
                     Low = GetHistoricValue(dataValues, HistoricalData.Low),
@@ -53,12 +51,10 @@ namespace PBI.CaseStudy.Helper
                 return null;
             }
         }
-
         private double GetHistoricValue(string[] dataValues, HistoricalData field)
         {
             return double.Parse(dataValues[(int)field]);
         }
-
         private string GetFormattedHistoricalDataLine(string historicDataLine)
         {
             var volumePattern = Regex.Match(historicDataLine, "\"(.*?)\"").Value;
@@ -69,6 +65,30 @@ namespace PBI.CaseStudy.Helper
 
             var formatedVolume = volumePattern.Replace("\"", "").Replace(",", "");
             return historicDataLine.Replace(volumePattern, formatedVolume);
+        }
+        private void SetSpikeChangeAndChangePercent()
+        {
+            for (int i = 0; i < _historicalData.Count; i++)
+            {
+                var currentData = _historicalData[i];
+                if (!currentData.Change.HasValue)
+                {
+                    if (i == 0)
+                    {
+                        currentData.Change = 0;
+                        currentData.PercentChange = 0;
+                    }
+                    else
+                    {
+                        double previousClose = _historicalData[i - 1].Close;
+                        currentData.Change = Math.Round(currentData.Close - previousClose, 2);
+                        currentData.PercentChange = Math.Round((currentData.Change.Value / previousClose) * 100, 2);
+
+                    }
+                }
+
+                currentData.Spike = currentData.High - currentData.Low;
+            }
         }
 
     }

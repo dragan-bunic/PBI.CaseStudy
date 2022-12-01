@@ -21,20 +21,17 @@ public abstract class HistoricalData<T> : IHistoricalData<T>
         _logger = logger;
     }
     protected abstract T GetCSV(string line);
-
     public abstract List<T> GetHistoricalData(string csvName);
-
     protected void LoadHistoricalData(string csvName)
     {
         string currentRootPath = _webHostEnvironment.ContentRootPath;
-        string dataPath = Path.Combine(currentRootPath, Settings.DataImportFolder, csvName);
+        string dataPath = Path.Combine(currentRootPath, Resources.DataImportFolder, csvName);
 
         if (!File.Exists(dataPath))
         {
             _logger.LogError($"File'{dataPath}' doesn't exist!");
             return;
         }
-
         try
         {
             lock (lockObject)

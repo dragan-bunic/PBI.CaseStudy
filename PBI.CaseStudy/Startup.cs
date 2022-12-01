@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using PBI.CaseStudy.Models.Interfaces;
 using PBI.CaseStudy.Models;
 using PBI.CaseStudy.Helper;
-
+using PBI.CaseStudy.Controllers;
 
 namespace PBI.CaseStudy
 {
@@ -29,7 +29,10 @@ namespace PBI.CaseStudy
         {
             services.AddControllersWithViews().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
+            services.AddSingleton<ISecurity, Models.SecuritySettings>();
             services.AddScoped<IHistoricalData<SecurityHistoricData>, SecurityHistoricalData>();
+            services.AddScoped<IStatistic<SecurityStatistic, SecurityHistoricData>, SecurityStatisticService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

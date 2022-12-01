@@ -14,5 +14,7 @@ namespace PBI.CaseStudy.Helper
         Close = 4,
         AdjClose = 5,
         Volume = 6,
+        Change = 7,
+        ChangePercent = 8
     }
 }

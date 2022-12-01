@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using PBI.CaseStudy.Models;
 
 namespace PBI.CaseStudy.Models.Interfaces
 {
-    public interface ISecurity
+    public interface IStatistic<T1, T2>
     {
-        List<Settings> GetSettingsData();
+        T1 GetStatisticsData(string id, List<T2> historicalData);
     }
 }
+

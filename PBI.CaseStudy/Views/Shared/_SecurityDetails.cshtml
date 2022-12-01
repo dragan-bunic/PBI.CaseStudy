@@ -1,0 +1,183 @@
+﻿@model PBI.CaseStudy.Models.SecurityView
+@using System.Globalization
+
+@*<h2>@string.Format("{0}({1})", Model.SecurityName, Model.Id)</h2>*@
+
+<script>
+    var highAverage = 77,
+        lowAverage = 58;
+
+    function customizePoint() {
+        debugger;
+        if (this.value > highAverage) {
+            return { color: "#ff7c7c", hoverStyle: { color: "#ff7c7c" } };
+        } else if (this.value < lowAverage) {
+            return { color: "#8c8cff", hoverStyle: { color: "#8c8cff" } };
+        }
+    }
+</script>
+
+@(Html.DevExtreme().Chart()
+        .ID($"chart_{Model.Id}")
+        .Title(string.Format("{0}({1})", Model.SecurityName, Model.Id))
+
+        .Legend(l => l.Visible(false))
+        .Crosshair(c => c.Enabled(true))
+        .CommonSeriesSettings(s => s
+            .ArgumentField("Date")
+        )
+        .Size(size => size
+            .Height(650)
+        )
+        .Panes(p =>
+        {
+            p.Add().Name("TopPane").Height("75%");
+            p.Add().Name("BottomPane").Height("25%");
+        })
+        .Series(s => s
+            .Add()
+            .Pane("TopPane")
+            .Type(SeriesType.Candlestick)
+            .Name(Model.Id)
+            .OpenValueField("Open")
+            .HighValueField("High")
+            .LowValueField("Low")
+            .CloseValueField("Close")
+            .ValueField("Volume")
+            .Reduction(r => r.Color("red"))
+            .ShowInLegend(true)
+        )
+        .Series(s => s
+            .Add()
+            .Type(SeriesType.Bar)
+            .ValueField("Volume")
+            .Name(Model.Id)
+
+            .ShowInLegend(true)
+        )
+        .ValueAxis(a =>
+        {
+            a.Add()
+                .Pane("BottomPane")
+                .Grid(g => g.Visible(true))
+                .Title(t => t.Text("Volume"));
+            a.Add()
+                .Pane("TopPane")
+                .TickInterval(1)
+                .Title(t => t.Text("US dollars"))
+                .Label(l => l.Format(f => f
+                .Type(Format.Currency).Precision(0)));
+        })
+        .ArgumentAxis(a => a
+            .WorkdaysOnly(true)
+            .Label(l => l.Format(Format.ShortDate))
+        )
+        .Export(e => e.Enabled(true))
+        .Tooltip(t => t
+            .Enabled(true)
+            .Location(ChartTooltipLocation.Edge)
+            .CustomizeTooltip(@<text>
+                function (arg) {
+                    var content = new Array();
+                    var changePrefix = Number(arg.point.data.Change) > 0 ? '+' : '';
+                    var changeColor = Number(arg.point.data.Change) > 0 ? 'green' : (Number(arg.point.data.Change) == 0 ? 'black' : 'red');
+                    content.push('<table style="width:100%">'+
+                    '<tr><td>Date:</td><td align="right">' + arg.point.data.Date.toLocaleDateString() + '</td></tr>'+
+                    '<tr><td>Open:</td><td align="right">' + arg.point.data.Open.toFixed(2) + '$</td></tr>'+
+                    '<tr><td>Close:</td><td align="right">' + arg.closeValue.toFixed(2) + '$</td></tr>'+
+                    '<tr><td>High:</td><td align="right">' + arg.highValue.toFixed(2) + '$</td></tr>'+
+                    '<tr><td>Low:</td><td align="right">' + arg.lowValue.toFixed(2) + '$</td></tr>'+
+                    '<tr><td>Change:</td><td align="right" style="color:' + changeColor + '">'+ changePrefix + arg.point.data.Change.toFixed(2) + '</td></tr>'+
+                    '<tr><td>% Change:</td><td align="right" style="color:' + changeColor + '">' + arg.point.data.PercentChange.toFixed(2) + '%</td></tr>'+
+                    '<tr style="border-bottom: 1px solid white"><td colspan="100%"></td></tr>'+
+                    '<tr style="border-bottom: 1px solid white"><td colspan="100%"></td></tr>'+
+                    '<tr style="border-bottom: 1px solid black"><td colspan="100%"></td></tr>'+
+                    '<tr style="border-bottom: 1px solid white"><td colspan="100%"></td></tr>'+
+                    '<tr style="border-bottom: 1px solid white"><td colspan="100%"></td></tr>'+
+                    '<tr><td>Volume:</td><td align="right">' + arg.point.data.Volume.toLocaleString() + '</td></tr>');
+                    return {
+                        html: content.join('')
+                    };
+                }
+            </text>)
+
+        )
+          .CommonAnnotationSettings(s => s
+            .Series(Model.Id)
+            .Type(AnnotationType.Text)
+            .Font(f => f
+                .Size(14)
+                .Weight(550)
+            )
+            .CustomizeTooltip(@<text>
+                function (e) {
+                    console.log(e);
+                    return {
+                        html: e.description
+                    };
+                }
+            </text>)
+        )
+        .Annotations(a =>
+        {
+            a.Add()
+            .Opacity(0.75)
+            .Font(f => { f.Color("#25BF96"); })
+            .Argument(Model.SecurityStatistic.MaxClose.Date)
+            .Type(AnnotationType.Text)
+            .Description($"The highest price was {Model.SecurityStatistic.MaxClose.Value.ToString("N2")}$ on a day {Model.SecurityStatistic.MaxClose.Date.ToString("MM/dd/yyyy")}")
+            .Text("Max");
+
+            a.Add()
+            .Opacity(0.75)
+            .Font(f => { f.Color("#CB1919"); })
+            .Argument(Model.SecurityStatistic.MinClose.Date)
+            .Type(AnnotationType.Text)
+            .Description($"The lowest price was  {Model.SecurityStatistic.MinClose.Value.ToString("N2")}$ on a day {Model.SecurityStatistic.MinClose.Date.ToString("MM/dd/yyyy")}")
+            .Text("Min");
+            if (Model.SecurityStatistic.MaxSpike != null)
+            {
+                a.Add()
+                .Opacity(0.75)
+                .Font(f => { f.Color("#A71E90"); })
+                .Argument(Model.SecurityStatistic.MaxSpike.Date)
+                .Type(AnnotationType.Text)
+                .Description($"The most positive change was {@Model.SecurityStatistic.MaxSpike.Value.ToString("N2")} on a day {Model.SecurityStatistic.MaxSpike.Date.ToString("MM/dd/yyyy")}")
+                .Text("Spike");
+            }
+        })
+
+        .DataSource(Model.HistoricData)
+    )
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <span class="label">Lowest price:</span>
+            <span class="price low">@string.Format("{0}$", @Model.SecurityStatistic.MinClose.Value.ToString("N2"))</span>
+            <span class="date">@Model.SecurityStatistic.MinClose.Date.ToString("MM/dd/yyyy")</span>
+        </div>
+        <div class="col">
+            <span class="label">Highest price:</span>
+            <span class="price high">@string.Format("{0}$", Model.SecurityStatistic.MaxClose.Value.ToString("N2"))</span>
+            <span class="date">@Model.SecurityStatistic.MaxClose.Date.ToString("MM/dd/yyyy")</span>
+        </div>
+        @if (Model.SecurityStatistic.MaxSpike != null)
+        {
+            <div class="col">
+                <span class="label">Most positive change:</span>
+                <span class="price spike">@string.Format("{0}", Model.SecurityStatistic.MaxSpike.Value.ToString("N2"))</span>
+                <span class="date">@Model.SecurityStatistic.MaxSpike.Date.ToString("MM/dd/yyyy")</span>
+            </div>
+        }
+    </div>
+    <div>
+        <strong>Max</strong> Return On Investment(ROI) would be on date (@Model.SecurityStatistic.MaxClose.Date.ToString("MM/dd/yyyy")) for @Model.SecurityStatistic.ROIMaxClose.NumberOfShares.ToString("N0", new CultureInfo("en-US")) shares invested on @Model.SecurityStatistic.ROIMaxClose.InvestedDate.ToString("MM/dd/yyyy") amounts to <strong>@string.Format("{0}%", Model.SecurityStatistic.ROIMaxClose.Value.ToString("N2"))</strong>
+    </div>
+    <div>
+        <strong>Min</strong> Return On Investment(ROI) would be on date (@Model.SecurityStatistic.MinClose.Date.ToString("MM/dd/yyyy")) for @Model.SecurityStatistic.ROIMinClose.NumberOfShares.ToString("N0", new CultureInfo("en-US")) shares invested on @Model.SecurityStatistic.ROIMinClose.InvestedDate.ToString("MM/dd/yyyy") amounts to <strong>@string.Format("{0}%", Model.SecurityStatistic.ROIMinClose.Value.ToString("N2"))</strong>
+    </div>
+    <div>
+        <strong>Spike</strong> Return On Investment(ROI) would be on date (@Model.SecurityStatistic.MaxSpike.Date.ToString("MM/dd/yyyy")) for @Model.SecurityStatistic.ROISpikeClose.NumberOfShares.ToString("N0", new CultureInfo("en-US")) shares invested on @Model.SecurityStatistic.ROISpikeClose.InvestedDate.ToString("MM/dd/yyyy") amounts to <strong>@string.Format("{0}%", Model.SecurityStatistic.ROISpikeClose.Value.ToString("N2"))</strong>
+    </div>
+</div>

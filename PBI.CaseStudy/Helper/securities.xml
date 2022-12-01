@@ -1,27 +1,15 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
-<root>
-  <row>
+﻿
+  <Settings>
     <id>GLW</id>
-    <securityName>Corning, Inc.</securityName>
-    <fileName>NYSE_GLW_2015.csv</fileName>
-    <invested>1/1/2015</invested>
+    <name>Corning, Inc.</name>
+    <file>NYSE_GLW_2015.csv</file>
+    <investedDate>1/1/2015</investedDate>
     <numberOfshares>1000</numberOfshares>
-  </row>
-  <row>
+  </Settings>
+  <Settings>
     <id>NVDA</id>
     <name>Nvidia Corporation, In.</name>
     <file>NVDA.csv</file>
-    <invested>1/1/2015</invested>
+    <investedDate>1/1/2015</investedDate>
     <numberOfshares>1000</numberOfshares>
-  </row>
-</root>
-
-
-
-<!-- Construct an instance of the XmlSerializer with the type
- of object that is being deserialized.
-var mySerializer = new XmlSerializer(typeof(MySerializableClass));
- To read the file, create a FileStream.
-using var myFileStream = new FileStream("myFileName.xml", FileMode.Open);
- Call the Deserialize method and cast to the object type.
-var myObject = (MySerializableClass)mySerializer.Deserialize(myFileStream); -->
+  </Settings>
